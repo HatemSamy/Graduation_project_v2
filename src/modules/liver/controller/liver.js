@@ -1,3 +1,5 @@
+
+import { create, find, findOneAndDelete } from "../../../../DB/DBMethods.js";
 import LiverModel from "../../../../DB/model/Liver.model.js";
 import { asynchandiler } from "../../../services/errorHandling.js";
 
@@ -7,7 +9,8 @@ import { asynchandiler } from "../../../services/errorHandling.js";
 
 export const liverTest=asynchandiler(async(req,res,next)=>{
    req.body.userID=req.user._id
-  const Test= await LiverModel.create(req.body)
+  const Test= await create({model:LiverModel,data:req.body})
+
 
    if (!Test) {
     return next(new Error("fail to create test"))
@@ -21,7 +24,7 @@ export const liverTest=asynchandiler(async(req,res,next)=>{
 export const GetliverRecord=asynchandiler(async(req,res,next)=>{
  const {_id}=req.user
  
- const  Record= await LiverModel.find({userID:_id})
+ const  Record= await find({filter:{userID:_id},model:LiverModel})
 
   if (!Record) {
     return  next(new Error("not found any liverTest "))
@@ -30,3 +33,20 @@ export const GetliverRecord=asynchandiler(async(req,res,next)=>{
   }
 
 })
+
+export const deleteliverRecord=asynchandiler(async(req,res,next)=>{
+  const {id}=req.params
+  
+  const  Record= await findOneAndDelete({filter:{userID:req.user._id,_id:id},model:LiverModel})
+
+   if (!Record) {
+     return  next(new Error("not found any liverRecord "))
+   } else {
+     return res.status(201).json({message:`your liverRecord whith Id:${id} has been deleted`})
+   }
+ 
+ })
+
+
+
+

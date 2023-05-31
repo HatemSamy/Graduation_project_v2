@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer'
-export async function sendEmail(dest, subject, message , attachments=[]) {
+export async function sendEmail(dest, message, subject , attachments=[]) {
     
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({

@@ -8,6 +8,8 @@ const router =Router()
 
 router.post("/",auth(endpoint.test),liverController.liverTest)
 router.get("/",auth(endpoint.test),liverController.GetliverRecord)
+router.delete("/:id",auth(endpoint.test),liverController.deleteliverRecord)
+
 
 
 

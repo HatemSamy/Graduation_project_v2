@@ -8,6 +8,8 @@ const router =Router()
 
 router.post("/",auth(endpoint.test),HeartController.HeartTest)
 router.get("/",auth(endpoint.test),HeartController.GetHeartRecord)
+router.delete("/:id",auth(endpoint.test),HeartController.deleteHeartRecord)
+
 
 
 

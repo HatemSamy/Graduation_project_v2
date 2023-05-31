@@ -8,6 +8,8 @@ const router =Router()
 
 router.post("/",auth(endpoint.test),ChronicController.CancerTest)
 router.get("/",auth(endpoint.test),ChronicController.GetCancerRecord)
+router.delete("/:id",auth(endpoint.test),ChronicController.deleteCancerRecord)
+
 
 
 

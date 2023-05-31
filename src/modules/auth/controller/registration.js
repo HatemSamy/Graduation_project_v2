@@ -3,8 +3,8 @@ import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import sendEmail from "../../../services/email.js"
 import { asynchandiler } from "../../../services/errorHandling.js"
-import { findOne } from "../../../../DB/DBMethods.js"
-import { nanoid } from "nanoid"
+import { findOne,findOneAndUpdate } from "../../../../DB/DBMethods.js"
+
 
 
 
@@ -12,7 +12,6 @@ import { nanoid } from "nanoid"
 export const signup =asynchandiler( async (req, res,next) => {
   const { userName, email, password } = req.body
   
-  // const user = await userModel.findOne({ email }).select("email")
   const user = await findOne({filter:{email},model:userModel,select:"email"})///name argument
 
   if (user) {
@@ -72,7 +71,7 @@ export const confirmEmail = asynchandiler(async (req, res) => {
 export const login =asynchandiler(async(req,res,next) => {
   const { email, password } = req.body
   
-  const user = await userModel.findOne({ email })
+  const user = await  findOne({filter:{email},model:userModel})
   if (!user) {
     return  next(Error("user not register",{cause:404}))
 
@@ -82,7 +81,7 @@ export const login =asynchandiler(async(req,res,next) => {
       return  next(Error("confirm your email frist",{cause:403}))
 
     } else {
-      const match = bcrypt.compareSync(password, user.password)
+      const match = bcrypt.compareSync(password,user.password)
       if (!match) {
         return  next(Error("in-valid password",{cause:404}))
    
@@ -144,33 +143,64 @@ export const refreshtoken = asynchandiler(async (req, res) => {
 
 }
 )
-export const sendAccessCode = asynchandiler(async (req, res, next) => {
-  const {email} = req.body;
-  const user =  await userModel.findOne({email})
+
+
+export const sendAccessCode = async (req, res, next) => {
+  const { email } = req.body
+  const user = await findOne({ model: userModel, filter: { email } })
   if (!user) {
-    return next(new Error("In-Valid Account", { cause: 404 }));
+      next(new (Error("user not found", { cause: 404 })))
   } else {
-    const accessCode = nanoid();
-   const updated=await userModel.updateOne({accesscode:accessCode});
-    await sendEmail(email, "Reset Password", `<h1>${accessCode}</h1>`);
-    return res.status(200).json({ message: "Done Check your Email" });
+      const accessCode = Math.floor(Math.random() * 9000) + 1000;
+      console.log({bb:accessCode});
+      await findOneAndUpdate({ model: userModel, filter: { email }, data: { accesscode: accessCode } })
+
+      const messege = `
+      <h1> ${accessCode} <h1/>
+      `
+
+      const info = await sendEmail(email, messege, "accessCode")
+      if (info?.accepted?.length) {
+
+          res.status(200).json({ message: " accessCode sended  check your email" })
+
+      }
+
+
   }
-});
 
 
-export const forgetPassword = asynchandiler(async (req, res, next) => {
-  const { email, newPassword ,accesscode} = req.body;
-  const user =userModel.findOne({email,accesscode});
+}
+
+
+
+
+
+
+
+export const ResetPassword = async (req, res, next) => {
+  const { email, accessCode, NewPassword } = req.body
+  const user = await findOne({ model: userModel, filter: { email, accessCode } })
+
   if (!user) {
-    return next(new Error("In-Valid Account Data ", { cause: 404 }));
+      return next(new Error("user not register", { cause: 404 }))
+
+
+     
   } else {
+    if (!NewPassword) {
+      return next(new Error("New password is missing"));
 
+    }
+      const hashPassword = bcrypt.hashSync(NewPassword, parseInt(process.env.SALTROUND))
 
-    const hash = bcrypt.hashSync(newPassword, parseInt(process.env.SALTROUND));
-    await userModel.updateOne({password:hash})
-    return res.json({massage:"password updated"});
+      const ResetPassword = await findOneAndUpdate({ model: userModel, filter: { email }, data: { password: hashPassword, accesscode: "" } })
+      res.status(200).json({ message: " password updated" })
+
   }
-});
+
+
+}
 
 
 

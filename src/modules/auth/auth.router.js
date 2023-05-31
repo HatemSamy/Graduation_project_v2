@@ -7,7 +7,7 @@ router.post("/signup",registrationRouter.signup)
 router.get("/confirmEmail/:token",registrationRouter.confirmEmail)
 router.get("/refreshtoken/:token",registrationRouter.refreshtoken)
 router.put("/sendAccessCode",registrationRouter.sendAccessCode)
-router.put("/forgetPassword",registrationRouter.forgetPassword)
+router.put("/forgetPassword",registrationRouter.ResetPassword)
 
 router.get("/login",registrationRouter.login)
 

@@ -44,7 +44,7 @@ const userSchema = new Schema({
     },
 
     accesscode:{
-     type:String,
+     type:Number,
     },
     image: String,
 

@@ -8,6 +8,8 @@ import DiabetesRouter from './Diabetes/Diabetes.router.js'
 import liverRouter from './liver/liver.router.js'
 import HeartRouter from './Heart/Heart.router.js'
 import ChronicRouter from './Chronic/Chronic.router.js'
+import malariaRouter from './malaria/malaria.router.js'
+import penumoniaRouter from './penumonia/penumonia.router.js'
 
 import CancerRouter from './cencer/Cancer.router.js'
 
@@ -45,6 +47,8 @@ export const appRouter = (app) => {
     app.use(`${baseUrl}/Heart`,HeartRouter )
     app.use(`${baseUrl}/Chronic`,ChronicRouter )
     app.use(`${baseUrl}/Cancer`,CancerRouter )
+    app.use(`${baseUrl}/malaria`,malariaRouter )
+    app.use(`${baseUrl}/penumonia`,penumoniaRouter )
 
     app.use('*', (req, res, next) => {
         res.send("In-valid Routing Plz check url  or  method")

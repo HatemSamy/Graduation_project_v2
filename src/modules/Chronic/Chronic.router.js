@@ -9,6 +9,7 @@ const router =Router()
 router.post("/",auth(endpoint.test),CancerController.ChronicTest)
 router.get("/",auth(endpoint.test),CancerController.GetChronicRecord)
 
+router.delete("/:id",auth(endpoint.test),CancerController.deleteChronicRecord)
 
 
 export default router
